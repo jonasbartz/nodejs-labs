@@ -1,0 +1,22 @@
+{
+  "name": "scrapper-soccer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cheerio": "^1.0.0-rc.12",
+    "csv-writer": "^1.6.0",
+    "express": "^4.18.1",
+    "node-html-parser": "^5.3.3",
+    "nodemon": "^2.0.19",
+    "puppeteer": "^16.1.1",
+    "request-promise": "^4.2.6"
+  }
+}
