@@ -1,7 +1,6 @@
 const scoreBing = require('./scorebing-api');
 const pg_data = require("./pg-connection");
 const fs = require('fs');
-const { Console } = require('console');
 
 const score = new scoreBing();
 
@@ -16,8 +15,10 @@ module.exports.getMatchDetail = () => {
 
         for (i = 0; i < i_max; i++)
         {
+            let insert_query = "";
+
             try{
-                if (data[i].status != "NS")
+                if (data[i].status != "NS" && data[i].status != "HT")
                 {
                     let insert_columns = ""
 
@@ -53,7 +54,9 @@ module.exports.getMatchDetail = () => {
                     "current_away_odd,  " +
                     "current_corner_odd,  " +
                     "game_pitch,  " +
-                    "game_weather " +
+                    "game_weather, " +
+                    "home_ball_possession, " +
+                    "away_ball_possession " +
                     ") ";
 
                     let insert_values = ""
@@ -61,17 +64,23 @@ module.exports.getMatchDetail = () => {
                     let pitch_id = data[i].events.length -2
                     let weather_id = data[i].events.length -1
 
+                    let home_name = data[i].host.n;
+                    let away_name = data[i].guest.n;
+
+                    home_name = home_name.replace("'", "");
+                    away_name = away_name.replace("'", "");
+
                     insert_values = insert_values + "now(), " + 
                                     insert_values + "now(), " + 
                                     insert_values + "'" + data[i].status + "', " + // Game status & time
                                     insert_values + "'" + data[i].hot + "', " + // Score bing hot game
                                     insert_values + "'" + data[i].league.cn + "', " + // Legue name
-                                    insert_values + "'" + data[i].host.n + "', " + 
+                                    insert_values + "'" + home_name + "', " + 
                                     insert_values + "'" + data[i].plus.ha + "', " + // home attacks
                                     insert_values + "'" + data[i].plus.hd + "', " +  // home dang attacks
                                     insert_values + "'" + data[i].plus.hso + "', " + // home shots on target
                                     insert_values + "'" + data[i].plus.hsf + "', " + // home shots off target                    
-                                    insert_values + "'" + data[i].guest.n + "', " + 
+                                    insert_values + "'" + away_name + "', " + 
                                     insert_values + "'" + data[i].plus.ga + "', " + 
                                     insert_values + "'" + data[i].plus.gd + "', " + 
                                     insert_values + "'" + data[i].plus.gso + "', " + 
@@ -91,21 +100,22 @@ module.exports.getMatchDetail = () => {
                                     insert_values + "'" + data[i].sd.h.hdx + "', " + // Current guest odd
                                     insert_values + "'" + data[i].sd.h.hcb + "', " + // Current corner exp
                                     insert_values + "'" + data[i].events[pitch_id].c + "', " +
-                                    insert_values + "'" + data[i].events[weather_id].c + "' ";
+                                    insert_values + "'" + data[i].events[weather_id].c + "', " +
+                                    insert_values + "'" + data[i].plus.hqq + "', " +
+                                    insert_values + "'" + data[i].plus.gqq + "' ";
                     
                     insert_values = " values (" + insert_values + ")"
 
-                    let insert_query = ""
-
                     insert_query = insert_columns + " " + insert_values
 
+                    //console.log(insert_query);
                     pg_data.setData(insert_columns, insert_values);
                     
                 }
             }catch(e){
+                console.log(insert_query);
                 console.log("=====> " + i + " ERROR:" + e)
-            }
-            
+            }            
         }
         console.log(i_max);
     });

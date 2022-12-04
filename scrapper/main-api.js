@@ -1,4 +1,5 @@
 const main = require('./process-data-scorebing-api')
+const update = require('./pg-connection-update')
 const sleep = require('sleep-promise');
 const fs = require('fs');
 
@@ -16,6 +17,10 @@ const fs = require('fs');
         console.log("Executando...");
         main.getMatchDetail();
         
+        await sleep(5000);        
+
+        update.update("call update_stats();");
+
         await sleep(60000);        
     }
 })();
